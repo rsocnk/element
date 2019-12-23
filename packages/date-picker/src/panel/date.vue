@@ -24,8 +24,8 @@
                 :placeholder="t('el.datepicker.selectDate')"
                 :value="visibleDate"
                 size="small"
-                @input="val => userInputDate = val"
-                @change="handleVisibleDateChange" />
+                @change="handleVisibleDateChange"
+                @input="handleVisibleDateInput"/>
             </span>
             <span class="el-date-picker__editor-wrap" v-clickoutside="handleTimePickClose">
               <el-input
@@ -34,8 +34,8 @@
                 :placeholder="t('el.datepicker.selectTime')"
                 :value="visibleTime"
                 size="small"
-                @input="val => userInputTime = val"
-                @change="handleVisibleTimeChange" />
+                @change="handleVisibleTimeChange"
+                @input="handleVisibleTimeInput"/>
               <time-picker
                 ref="timepicker"
                 :time-arrow-control="arrowControl"
@@ -455,6 +455,7 @@
       },
 
       handleVisibleTimeChange(value) {
+        // console.log('date.vue.handleVisibleTimeChange:' + value + ',' + this.timeFormat);
         const time = parseDate(value, this.timeFormat);
         if (time && this.checkDateWithinRange(time)) {
           this.date = modifyDate(time, this.year, this.month, this.monthDate);
@@ -462,6 +463,28 @@
           this.$refs.timepicker.value = this.date;
           this.timePickerVisible = false;
           this.emit(this.date, true);
+        }
+      },
+
+      handleVisibleTimeInput(value) {
+        let preInput = this.userInputTime;
+        this.userInputTime = value;
+        if (!value) {
+          return;
+        }
+        let len = value.length;
+        if (preInput && len < preInput.length) {
+          // deleting ..
+          return;
+        }
+        if (len < 2) {
+          return;
+        }
+        let pos = value.lastIndexOf(':');
+        // console.log('date.vue.handleVisibleTimeInput:' + pos + ',' + len);
+        if (pos < len - 2 && len < 6) {
+          value += ':';
+          this.userInputTime = value;
         }
       },
 
@@ -475,6 +498,35 @@
           this.userInputDate = null;
           this.resetView();
           this.emit(this.date, true);
+        }
+      },
+
+      handleVisibleDateInput(value) {
+        let preInput = this.userInputDate;
+        this.userInputDate = value;
+        if (!value) {
+          return;
+        }
+        let len = value.length;
+        if (preInput && len < preInput.length) {
+          // deleting ..
+          return;
+        }
+        if (len < 4) {
+          return;
+        }
+        let pos = value.lastIndexOf('-');
+        // console.log('date.vue.handleVisibleDateInput:' + pos + ',' + len);
+        if (len < 5) {
+          if (pos < 0 && len === 4) {
+            value += '-';
+            this.userInputDate = value;
+          }
+        } else {
+          if (pos < len - 2 && len < 8) {
+            value += '-';
+            this.userInputDate = value;
+          }
         }
       },
 
