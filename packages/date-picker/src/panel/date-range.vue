@@ -455,6 +455,26 @@
       },
 
       handleDateInput(value, type) {
+        // preProcess
+        let preInput = this.dateUserInput[type];
+        let len = value.length;
+        // console.log('dr.handleDateInput:' + preInput + ',' + len);
+        if (!preInput || len > preInput.length) {
+          if (len >= 4) {
+            let pos = value.lastIndexOf('-');
+            if (len < 5) {
+              if (pos < 0 && len === 4) {
+                value += '-';
+              }
+            } else {
+              if (pos < len - 2 && len < 8) {
+                value += '-';
+              }
+            }
+          }
+        }
+        // end preProcess
+
         this.dateUserInput[type] = value;
         if (value.length !== this.dateFormat.length) return;
         const parsedValue = parseDate(value, this.dateFormat);
@@ -498,6 +518,19 @@
       },
 
       handleTimeInput(value, type) {
+        // preProcess
+        let preInput = this.timeUserInput[type];
+        let len = value.length;
+        // console.log('dr.handleTimeInput:' + preInput + ',' + len);
+        if (!preInput || len > preInput.length) {
+          if (len >= 2) {
+            let pos = value.lastIndexOf(':');
+            if (pos < len - 2 && len < 6) {
+              value += ':';
+            }
+          }
+        }
+        // end preProcess
         this.timeUserInput[type] = value;
         if (value.length !== this.timeFormat.length) return;
         const parsedValue = parseDate(value, this.timeFormat);
